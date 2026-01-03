@@ -49,10 +49,10 @@ function formatPriceChange(change: number | undefined): string {
 }
 
 function getPriceChangeColor(change: number | undefined): string {
-  if (change === null || change === undefined) return 'text-gray-400';
-  if (change > 0) return 'text-green-400';
+  if (change === null || change === undefined) return 'text-dex-text';
+  if (change > 0) return 'text-dex-green';
   if (change < 0) return 'text-red-400';
-  return 'text-gray-400';
+  return 'text-dex-text';
 }
 
 function getChainColor(chain: string): string {
@@ -65,11 +65,11 @@ function getChainColor(chain: string): string {
     arbitrum: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
     avalanche: 'bg-red-500/20 text-red-300 border-red-500/30',
   };
-  return colors[chain] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+  return colors[chain] || 'bg-dex-border/50 text-dex-text border-dex-border';
 }
 
 function getChainButtonColor(chain: string, selected: boolean): string {
-  if (!selected) return 'bg-gray-700 text-gray-300 hover:bg-gray-600';
+  if (!selected) return 'bg-dex-hover text-dex-text hover:bg-dex-border';
 
   const colors: { [key: string]: string } = {
     solana: 'bg-purple-600 text-white hover:bg-purple-700',
@@ -271,23 +271,23 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white p-8">
+    <main className="min-h-screen bg-dex-bg text-white p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
+          <h1 className="text-5xl font-bold mb-3 text-dex-blue drop-shadow-lg">
             DexScreener Trending Tokens
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-dex-text text-lg">
             Extract token contract addresses from trending pairs
           </p>
         </div>
 
         {/* Controls */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-2xl border border-gray-700/50">
+        <div className="bg-dex-card rounded-xl p-6 mb-6 shadow-2xl border border-dex-border">
           {/* Chain Multi-Select */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2 text-gray-300 text-center">Chains (multi-select):</label>
+            <label className="block text-sm font-semibold mb-2 text-dex-text text-center">Chains (multi-select):</label>
             <div className="flex flex-wrap gap-2 justify-center">
               {['solana', 'ethereum', 'bsc', 'base', 'polygon', 'arbitrum', 'avalanche'].map(chain => (
                 <button
@@ -308,7 +308,7 @@ export default function Home() {
             <select
               value={minMarketCap}
               onChange={(e) => setMinMarketCap(e.target.value)}
-              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+              className="bg-dex-hover text-white px-4 py-2 rounded-lg border border-dex-border focus:border-dex-blue focus:outline-none"
             >
               <option value="">Min Market Cap</option>
               <option value="500000">&gt; $500K</option>
@@ -318,7 +318,7 @@ export default function Home() {
             <select
               value={minLiquidity}
               onChange={(e) => setMinLiquidity(e.target.value)}
-              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+              className="bg-dex-hover text-white px-4 py-2 rounded-lg border border-dex-border focus:border-dex-blue focus:outline-none"
             >
               <option value="">Min Liquidity</option>
               <option value="50000">&gt; $50K</option>
@@ -329,7 +329,7 @@ export default function Home() {
             <select
               value={maxAge}
               onChange={(e) => setMaxAge(e.target.value)}
-              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+              className="bg-dex-hover text-white px-4 py-2 rounded-lg border border-dex-border focus:border-dex-blue focus:outline-none"
             >
               <option value="">Max Age</option>
               <option value="24">&lt; 1 Day</option>
@@ -338,7 +338,7 @@ export default function Home() {
 
             <button
               onClick={clearFilters}
-              className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="bg-dex-border hover:bg-dex-hover px-4 py-2 rounded-lg font-semibold transition-colors"
             >
               🔄 Clear Filters
             </button>
@@ -349,7 +349,7 @@ export default function Home() {
             <button
               onClick={fetchTokens}
               disabled={loading}
-              className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
+              className="bg-dex-blue hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed px-8 py-3 rounded-lg font-semibold text-lg transition-all transform hover:scale-105"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -369,20 +369,20 @@ export default function Home() {
                 {selectedTokens.size > 0 && (
                   <button
                     onClick={copySelectedAddresses}
-                    className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+                    className="bg-dex-green hover:opacity-80 px-6 py-3 rounded-lg font-semibold transition-colors"
                   >
                     📋 Copy Selected ({selectedTokens.size})
                   </button>
                 )}
                 <button
                   onClick={copyAllAddresses}
-                  className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-dex-blue hover:opacity-80 px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   📋 Copy All Addresses
                 </button>
                 <button
                   onClick={exportCSV}
-                  className="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+                  className="bg-dex-border hover:bg-dex-hover px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
                   📥 Export CSV
                 </button>
@@ -391,10 +391,10 @@ export default function Home() {
           </div>
 
           {lastUpdated && (
-            <div className="text-center text-gray-400 mt-4 text-sm space-y-1">
+            <div className="text-center text-dex-text mt-4 text-sm space-y-1">
               <p>Last updated: {lastUpdated}</p>
               {tokens.length > 0 && (
-                <p className="font-semibold text-green-400">
+                <p className="font-semibold text-dex-green">
                   Showing {tokens.length} token{tokens.length !== 1 ? 's' : ''}
                 </p>
               )}
@@ -412,18 +412,18 @@ export default function Home() {
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-            <p className="mt-4 text-gray-400">Fetching trending tokens from DexScreener...</p>
-            <p className="text-sm text-gray-500">This may take 20-30 seconds</p>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-dex-blue border-t-transparent"></div>
+            <p className="mt-4 text-dex-text">Fetching trending tokens from DexScreener...</p>
+            <p className="text-sm text-dex-text/70">This may take 20-30 seconds</p>
           </div>
         )}
 
         {/* Results Table */}
         {!loading && tokens.length > 0 && (
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl border border-gray-700/50">
+          <div className="bg-dex-card rounded-xl overflow-hidden shadow-2xl border border-dex-border">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-700/50 backdrop-blur-sm">
+                <thead className="bg-dex-hover">
                   <tr>
                     <th className="px-4 py-3 text-center">
                       <input
@@ -445,13 +445,13 @@ export default function Home() {
                     <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700/50">
+                <tbody className="divide-y divide-dex-border">
                   {tokens.map((token, index) => {
                     const ageInHours = parseAgeToHours(token.age);
                     const isNew = ageInHours !== null && ageInHours < 1;
 
                     return (
-                      <tr key={index} className={`hover:bg-gray-700/30 transition-all duration-200 ${selectedTokens.has(index) ? 'bg-blue-900/20 border-l-4 border-blue-500' : ''}`}>
+                      <tr key={index} className={`hover:bg-dex-hover/50 transition-all duration-200 ${selectedTokens.has(index) ? 'bg-dex-blue/10 border-l-4 border-dex-blue' : ''}`}>
                         <td className="px-4 py-3 text-center">
                           <input
                             type="checkbox"
@@ -460,7 +460,7 @@ export default function Home() {
                             className="w-4 h-4 cursor-pointer"
                           />
                         </td>
-                        <td className="px-4 py-3 text-gray-400 font-medium">{index + 1}</td>
+                        <td className="px-4 py-3 text-dex-text font-medium">{index + 1}</td>
                         <td className="px-4 py-3">
                           <span className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize border ${getChainColor(token.chain)}`}>
                             {token.chain}
@@ -470,7 +470,7 @@ export default function Home() {
                           <div className="flex items-center gap-2">
                             <div>
                               <span className="font-bold text-white">{token.token_symbol}</span>
-                              <span className="text-gray-400 text-sm ml-2 hidden md:inline">
+                              <span className="text-dex-text text-sm ml-2 hidden md:inline">
                                 {token.token_name.length > 20
                                   ? token.token_name.substring(0, 20) + '...'
                                   : token.token_name}
@@ -483,16 +483,16 @@ export default function Home() {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-gray-300 font-medium">
+                        <td className="px-4 py-3 text-dex-text font-medium">
                           {token.age || 'N/A'}
                         </td>
-                      <td className="px-4 py-3 text-green-400 font-mono">
+                      <td className="px-4 py-3 text-dex-green font-mono">
                         {formatMarketCap(token.market_cap)}
                       </td>
-                      <td className="px-4 py-3 text-blue-400 font-mono">
+                      <td className="px-4 py-3 text-dex-blue font-mono">
                         {formatMarketCap(token.liquidity_usd)}
                       </td>
-                      <td className="px-4 py-3 text-purple-400 font-mono">
+                      <td className="px-4 py-3 text-dex-blue font-mono">
                         {formatVolume(token.volume_24h)}
                       </td>
                       <td className="px-4 py-3 relative group">
@@ -500,28 +500,28 @@ export default function Home() {
                           {formatPriceChange(token.price_change.h24)}
                         </span>
                         {/* Tooltip on hover */}
-                        <div className="absolute z-30 hidden group-hover:block bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl top-full mt-2 left-1/2 -translate-x-1/2 min-w-[140px]">
+                        <div className="absolute z-30 hidden group-hover:block bg-dex-bg border border-dex-border rounded-lg p-3 shadow-xl top-full mt-2 left-1/2 -translate-x-1/2 min-w-[140px]">
                           <div className="text-xs space-y-1">
                             <div className="flex justify-between gap-3">
-                              <span className="text-gray-400">5m:</span>
+                              <span className="text-dex-text">5m:</span>
                               <span className={getPriceChangeColor(token.price_change.m5)}>
                                 {formatPriceChange(token.price_change.m5)}
                               </span>
                             </div>
                             <div className="flex justify-between gap-3">
-                              <span className="text-gray-400">1h:</span>
+                              <span className="text-dex-text">1h:</span>
                               <span className={getPriceChangeColor(token.price_change.h1)}>
                                 {formatPriceChange(token.price_change.h1)}
                               </span>
                             </div>
                             <div className="flex justify-between gap-3">
-                              <span className="text-gray-400">6h:</span>
+                              <span className="text-dex-text">6h:</span>
                               <span className={getPriceChangeColor(token.price_change.h6)}>
                                 {formatPriceChange(token.price_change.h6)}
                               </span>
                             </div>
-                            <div className="flex justify-between gap-3 border-t border-gray-700 pt-1">
-                              <span className="text-gray-400">24h:</span>
+                            <div className="flex justify-between gap-3 border-t border-dex-border pt-1">
+                              <span className="text-dex-text">24h:</span>
                               <span className={getPriceChangeColor(token.price_change.h24)}>
                                 {formatPriceChange(token.price_change.h24)}
                               </span>
@@ -530,7 +530,7 @@ export default function Home() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <code className="text-xs bg-gray-900 px-2 py-1 rounded font-mono text-blue-300">
+                        <code className="text-xs bg-dex-bg px-2 py-1 rounded font-mono text-dex-blue">
                           {token.contract_address.length > 20 
                             ? `${token.contract_address.substring(0, 8)}...${token.contract_address.slice(-8)}`
                             : token.contract_address}
@@ -542,8 +542,8 @@ export default function Home() {
                             onClick={() => copyAddress(token.contract_address, index)}
                             className={`px-3 py-1 rounded text-sm transition-colors ${
                               copiedIndex === index
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-600 hover:bg-gray-500'
+                                ? 'bg-dex-green text-white'
+                                : 'bg-dex-border hover:bg-dex-hover'
                             }`}
                           >
                             {copiedIndex === index ? '✓ Copied' : 'Copy'}
@@ -552,7 +552,7 @@ export default function Home() {
                             href={token.dexscreener_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+                            className="px-3 py-1 bg-dex-blue hover:opacity-80 rounded text-sm transition-colors"
                           >
                             DEX
                           </a>
@@ -583,14 +583,14 @@ export default function Home() {
 
         {/* Empty State */}
         {!loading && tokens.length === 0 && !error && (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-dex-text">
             <p className="text-6xl mb-4">🔍</p>
             <p className="text-xl">Click the button above to fetch trending tokens</p>
           </div>
         )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-gray-500 text-sm">
+        <footer className="mt-12 text-center text-dex-text/70 text-sm">
           <p>Top 50 trending tokens from DexScreener • Shows actual token contract addresses (not pair addresses)</p>
         </footer>
       </div>
