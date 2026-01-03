@@ -26,6 +26,34 @@ function formatMarketCap(mcap: number | null): string {
   return `$${mcap.toFixed(0)}`;
 }
 
+function getChainColor(chain: string): string {
+  const colors: { [key: string]: string } = {
+    solana: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    ethereum: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    bsc: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
+    base: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+    polygon: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+    arbitrum: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+    avalanche: 'bg-red-500/20 text-red-300 border-red-500/30',
+  };
+  return colors[chain] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+}
+
+function getChainButtonColor(chain: string, selected: boolean): string {
+  if (!selected) return 'bg-gray-700 text-gray-300 hover:bg-gray-600';
+
+  const colors: { [key: string]: string } = {
+    solana: 'bg-purple-600 text-white hover:bg-purple-700',
+    ethereum: 'bg-blue-600 text-white hover:bg-blue-700',
+    bsc: 'bg-yellow-600 text-white hover:bg-yellow-700',
+    base: 'bg-cyan-600 text-white hover:bg-cyan-700',
+    polygon: 'bg-indigo-600 text-white hover:bg-indigo-700',
+    arbitrum: 'bg-sky-600 text-white hover:bg-sky-700',
+    avalanche: 'bg-red-600 text-white hover:bg-red-700',
+  };
+  return colors[chain] || 'bg-blue-600 text-white hover:bg-blue-700';
+}
+
 export default function Home() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(false);
@@ -211,20 +239,20 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white p-8">
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-green-400 via-blue-500 to-purple-500 bg-clip-text text-transparent drop-shadow-lg">
             DexScreener Trending Tokens
           </h1>
-          <p className="text-gray-400">
+          <p className="text-gray-400 text-lg">
             Extract token contract addresses from trending pairs
           </p>
         </div>
 
         {/* Controls */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 mb-6 shadow-2xl border border-gray-700/50">
           {/* Chain Multi-Select */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2 text-gray-300 text-center">Chains (multi-select):</label>
@@ -233,10 +261,8 @@ export default function Home() {
                 <button
                   key={chain}
                   onClick={() => toggleChainFilter(chain)}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors capitalize ${
-                    chainFilter.includes(chain)
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 capitalize shadow-md hover:shadow-lg transform hover:scale-105 ${
+                    getChainButtonColor(chain, chainFilter.includes(chain))
                   }`}
                 >
                   {chain}
@@ -362,10 +388,10 @@ export default function Home() {
 
         {/* Results Table */}
         {!loading && tokens.length > 0 && (
-          <div className="bg-gray-800 rounded-lg overflow-hidden">
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl border border-gray-700/50">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-700">
+                <thead className="bg-gray-700/50 backdrop-blur-sm">
                   <tr>
                     <th className="px-4 py-3 text-center">
                       <input
@@ -385,36 +411,47 @@ export default function Home() {
                     <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
-                  {tokens.map((token, index) => (
-                    <tr key={index} className={`hover:bg-gray-700/50 transition-colors ${selectedTokens.has(index) ? 'bg-blue-900/30' : ''}`}>
-                      <td className="px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedTokens.has(index)}
-                          onChange={() => toggleTokenSelection(index)}
-                          className="w-4 h-4 cursor-pointer"
-                        />
-                      </td>
-                      <td className="px-4 py-3 text-gray-400">{index + 1}</td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-1 bg-gray-700 rounded text-sm capitalize">
-                          {token.chain}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div>
-                          <span className="font-semibold">{token.token_symbol}</span>
-                          <span className="text-gray-400 text-sm ml-2 hidden md:inline">
-                            {token.token_name.length > 20 
-                              ? token.token_name.substring(0, 20) + '...' 
-                              : token.token_name}
+                <tbody className="divide-y divide-gray-700/50">
+                  {tokens.map((token, index) => {
+                    const ageInHours = parseAgeToHours(token.age);
+                    const isNew = ageInHours !== null && ageInHours < 1;
+
+                    return (
+                      <tr key={index} className={`hover:bg-gray-700/30 transition-all duration-200 ${selectedTokens.has(index) ? 'bg-blue-900/20 border-l-4 border-blue-500' : ''}`}>
+                        <td className="px-4 py-3 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedTokens.has(index)}
+                            onChange={() => toggleTokenSelection(index)}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 font-medium">{index + 1}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize border ${getChainColor(token.chain)}`}>
+                            {token.chain}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-gray-300">
-                        {token.age || 'N/A'}
-                      </td>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div>
+                              <span className="font-bold text-white">{token.token_symbol}</span>
+                              <span className="text-gray-400 text-sm ml-2 hidden md:inline">
+                                {token.token_name.length > 20
+                                  ? token.token_name.substring(0, 20) + '...'
+                                  : token.token_name}
+                              </span>
+                            </div>
+                            {isNew && (
+                              <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-bold rounded border border-green-500/30 animate-pulse">
+                                NEW
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-300 font-medium">
+                          {token.age || 'N/A'}
+                        </td>
                       <td className="px-4 py-3 text-green-400 font-mono">
                         {formatMarketCap(token.market_cap)}
                       </td>
@@ -451,7 +488,8 @@ export default function Home() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
