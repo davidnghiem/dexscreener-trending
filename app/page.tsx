@@ -29,23 +29,61 @@ export default function Home() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [chainFilter, setChainFilter] = useState<string>('');
+  const [minMarketCap, setMinMarketCap] = useState<string>('');
+  const [maxAge, setMaxAge] = useState<string>('');
+
+  // Helper function to parse age string to hours
+  const parseAgeToHours = (age: string | null): number | null => {
+    if (!age) return null;
+    const match = age.match(/(\d+)([mhd])/);
+    if (!match) return null;
+
+    const value = parseInt(match[1]);
+    const unit = match[2];
+
+    if (unit === 'm') return value / 60; // minutes to hours
+    if (unit === 'h') return value;
+    if (unit === 'd') return value * 24;
+    return null;
+  };
 
   const fetchTokens = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const params = new URLSearchParams();
       if (chainFilter) params.set('chain', chainFilter);
-      
+
       const response = await fetch(`/api/trending?${params}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch tokens');
       }
-      
+
       const data = await response.json();
-      setTokens(data.tokens);
+
+      // Apply client-side filters
+      let filteredTokens = data.tokens;
+
+      // Filter by minimum market cap
+      if (minMarketCap) {
+        const minMcap = parseInt(minMarketCap);
+        filteredTokens = filteredTokens.filter((token: Token) =>
+          token.market_cap !== null && token.market_cap >= minMcap
+        );
+      }
+
+      // Filter by maximum age
+      if (maxAge) {
+        const maxAgeHours = parseInt(maxAge);
+        filteredTokens = filteredTokens.filter((token: Token) => {
+          const ageInHours = parseAgeToHours(token.age);
+          return ageInHours !== null && ageInHours <= maxAgeHours;
+        });
+      }
+
+      setTokens(filteredTokens);
       setLastUpdated(new Date().toLocaleString());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -125,6 +163,26 @@ export default function Home() {
               <option value="polygon">Polygon</option>
               <option value="arbitrum">Arbitrum</option>
               <option value="avalanche">Avalanche</option>
+            </select>
+
+            <select
+              value={minMarketCap}
+              onChange={(e) => setMinMarketCap(e.target.value)}
+              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="">Min Market Cap</option>
+              <option value="500000">&gt; $500K</option>
+              <option value="1000000">&gt; $1M</option>
+            </select>
+
+            <select
+              value={maxAge}
+              onChange={(e) => setMaxAge(e.target.value)}
+              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="">Max Age</option>
+              <option value="24">&lt; 1 Day</option>
+              <option value="168">&lt; 7 Days</option>
             </select>
 
             <button
