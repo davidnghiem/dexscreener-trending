@@ -530,29 +530,29 @@ export default function Home() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <code className="text-xs bg-dex-bg px-2 py-1 rounded font-mono text-dex-blue">
-                          {token.contract_address.length > 20 
-                            ? `${token.contract_address.substring(0, 8)}...${token.contract_address.slice(-8)}`
-                            : token.contract_address}
+                        <code
+                          onClick={() => copyAddress(token.contract_address, index)}
+                          className={`text-xs px-2 py-1 rounded font-mono cursor-pointer transition-colors ${
+                            copiedIndex === index
+                              ? 'bg-dex-green text-white'
+                              : 'bg-dex-bg text-dex-blue hover:bg-dex-hover'
+                          }`}
+                          title="Click to copy"
+                        >
+                          {copiedIndex === index
+                            ? '✓ Copied!'
+                            : token.contract_address.length > 20
+                              ? `${token.contract_address.substring(0, 8)}...${token.contract_address.slice(-8)}`
+                              : token.contract_address}
                         </code>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <button
-                            onClick={() => copyAddress(token.contract_address, index)}
-                            className={`w-16 py-1 rounded text-sm transition-colors text-center ${
-                              copiedIndex === index
-                                ? 'bg-dex-green text-white'
-                                : 'bg-dex-border hover:bg-dex-hover'
-                            }`}
-                          >
-                            {copiedIndex === index ? '✓' : 'Copy'}
-                          </button>
                           <a
                             href={token.dexscreener_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-16 py-1 bg-dex-blue hover:opacity-80 rounded text-sm transition-colors text-center"
+                            className="w-12 py-1 bg-dex-blue hover:opacity-80 rounded text-sm transition-colors text-center"
                           >
                             DEX
                           </a>
@@ -561,13 +561,12 @@ export default function Home() {
                               href={token.twitter_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-16 py-1 bg-sky-600 hover:bg-sky-700 rounded text-sm transition-colors flex items-center justify-center gap-1"
+                              className="w-12 py-1 bg-sky-600 hover:bg-sky-700 rounded text-sm transition-colors flex items-center justify-center"
                               title="View on X/Twitter"
                             >
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                               </svg>
-                              X
                             </a>
                           )}
                         </div>
