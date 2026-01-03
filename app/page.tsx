@@ -12,6 +12,10 @@ interface Token {
   liquidity_usd: number | null;
   age: string | null;
   dexscreener_url: string;
+  priceChange?: {
+    h1?: number;
+    h24?: number;
+  };
 }
 
 function formatMarketCap(mcap: number | null): string {
@@ -28,9 +32,11 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [chainFilter, setChainFilter] = useState<string>('');
+  const [chainFilter, setChainFilter] = useState<string[]>([]);
   const [minMarketCap, setMinMarketCap] = useState<string>('');
   const [maxAge, setMaxAge] = useState<string>('');
+  const [minLiquidity, setMinLiquidity] = useState<string>('');
+  const [selectedTokens, setSelectedTokens] = useState<Set<number>>(new Set());
 
   // Helper function to parse age string to hours
   const parseAgeToHours = (age: string | null): number | null => {
@@ -54,10 +60,15 @@ export default function Home() {
   const fetchTokens = async () => {
     setLoading(true);
     setError(null);
+    setSelectedTokens(new Set()); // Clear selections on new fetch
 
     try {
+      // If multiple chains selected, fetch all and filter client-side
+      // If single chain, pass to API for efficiency
       const params = new URLSearchParams();
-      if (chainFilter) params.set('chain', chainFilter);
+      if (chainFilter.length === 1) {
+        params.set('chain', chainFilter[0]);
+      }
 
       const response = await fetch(`/api/trending?${params}`);
 
@@ -70,11 +81,26 @@ export default function Home() {
       // Apply client-side filters
       let filteredTokens = data.tokens;
 
+      // Filter by multiple chains
+      if (chainFilter.length > 1) {
+        filteredTokens = filteredTokens.filter((token: Token) =>
+          chainFilter.includes(token.chain)
+        );
+      }
+
       // Filter by minimum market cap
       if (minMarketCap) {
         const minMcap = parseInt(minMarketCap);
         filteredTokens = filteredTokens.filter((token: Token) =>
           token.market_cap !== null && token.market_cap >= minMcap
+        );
+      }
+
+      // Filter by minimum liquidity
+      if (minLiquidity) {
+        const minLiq = parseInt(minLiquidity);
+        filteredTokens = filteredTokens.filter((token: Token) =>
+          token.liquidity_usd !== null && token.liquidity_usd >= minLiq
         );
       }
 
@@ -116,6 +142,52 @@ export default function Home() {
     }
   };
 
+  const copySelectedAddresses = async () => {
+    const selectedAddresses = tokens
+      .filter((_, index) => selectedTokens.has(index))
+      .map(t => t.contract_address)
+      .join('\n');
+    try {
+      await navigator.clipboard.writeText(selectedAddresses);
+      alert(`${selectedTokens.size} selected addresses copied to clipboard!`);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const toggleTokenSelection = (index: number) => {
+    const newSelected = new Set(selectedTokens);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedTokens(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedTokens.size === tokens.length) {
+      setSelectedTokens(new Set());
+    } else {
+      setSelectedTokens(new Set(tokens.map((_, i) => i)));
+    }
+  };
+
+  const clearFilters = () => {
+    setChainFilter([]);
+    setMinMarketCap('');
+    setMaxAge('');
+    setMinLiquidity('');
+  };
+
+  const toggleChainFilter = (chain: string) => {
+    if (chainFilter.includes(chain)) {
+      setChainFilter(chainFilter.filter(c => c !== chain));
+    } else {
+      setChainFilter([...chainFilter, chain]);
+    }
+  };
+
   const exportCSV = () => {
     const headers = ['Rank', 'Chain', 'Symbol', 'Name', 'Contract Address', 'Age', 'Market Cap', 'Price USD'];
     const rows = tokens.map((t, i) => [
@@ -153,22 +225,28 @@ export default function Home() {
 
         {/* Controls */}
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
-          <div className="flex flex-wrap gap-4 items-center justify-center">
-            <select
-              value={chainFilter}
-              onChange={(e) => setChainFilter(e.target.value)}
-              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="">All Chains</option>
-              <option value="solana">Solana</option>
-              <option value="ethereum">Ethereum</option>
-              <option value="bsc">BSC</option>
-              <option value="base">Base</option>
-              <option value="polygon">Polygon</option>
-              <option value="arbitrum">Arbitrum</option>
-              <option value="avalanche">Avalanche</option>
-            </select>
+          {/* Chain Multi-Select */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2 text-gray-300">Chains (multi-select):</label>
+            <div className="flex flex-wrap gap-2">
+              {['solana', 'ethereum', 'bsc', 'base', 'polygon', 'arbitrum', 'avalanche'].map(chain => (
+                <button
+                  key={chain}
+                  onClick={() => toggleChainFilter(chain)}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors capitalize ${
+                    chainFilter.includes(chain)
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  {chain}
+                </button>
+              ))}
+            </div>
+          </div>
 
+          {/* Filters Row */}
+          <div className="flex flex-wrap gap-4 items-center justify-center mb-4">
             <select
               value={minMarketCap}
               onChange={(e) => setMinMarketCap(e.target.value)}
@@ -177,6 +255,17 @@ export default function Home() {
               <option value="">Min Market Cap</option>
               <option value="500000">&gt; $500K</option>
               <option value="1000000">&gt; $1M</option>
+            </select>
+
+            <select
+              value={minLiquidity}
+              onChange={(e) => setMinLiquidity(e.target.value)}
+              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="">Min Liquidity</option>
+              <option value="50000">&gt; $50K</option>
+              <option value="100000">&gt; $100K</option>
+              <option value="250000">&gt; $250K</option>
             </select>
 
             <select
@@ -189,6 +278,16 @@ export default function Home() {
               <option value="168">&lt; 7 Days</option>
             </select>
 
+            <button
+              onClick={clearFilters}
+              className="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg font-semibold transition-colors"
+            >
+              🔄 Clear Filters
+            </button>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-4 items-center justify-center">
             <button
               onClick={fetchTokens}
               disabled={loading}
@@ -209,6 +308,14 @@ export default function Home() {
 
             {tokens.length > 0 && (
               <>
+                {selectedTokens.size > 0 && (
+                  <button
+                    onClick={copySelectedAddresses}
+                    className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    📋 Copy Selected ({selectedTokens.size})
+                  </button>
+                )}
                 <button
                   onClick={copyAllAddresses}
                   className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition-colors"
@@ -226,9 +333,14 @@ export default function Home() {
           </div>
 
           {lastUpdated && (
-            <p className="text-center text-gray-400 mt-4 text-sm">
-              Last updated: {lastUpdated}
-            </p>
+            <div className="text-center text-gray-400 mt-4 text-sm space-y-1">
+              <p>Last updated: {lastUpdated}</p>
+              {tokens.length > 0 && (
+                <p className="font-semibold text-green-400">
+                  Showing {tokens.length} token{tokens.length !== 1 ? 's' : ''}
+                </p>
+              )}
+            </div>
           )}
         </div>
 
@@ -255,18 +367,35 @@ export default function Home() {
               <table className="w-full">
                 <thead className="bg-gray-700">
                   <tr>
+                    <th className="px-4 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedTokens.size === tokens.length && tokens.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                    </th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">#</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Chain</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Token</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Age</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">MCap</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold">Liq</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Contract Address</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
                   {tokens.map((token, index) => (
-                    <tr key={index} className="hover:bg-gray-700/50 transition-colors">
+                    <tr key={index} className={`hover:bg-gray-700/50 transition-colors ${selectedTokens.has(index) ? 'bg-blue-900/30' : ''}`}>
+                      <td className="px-4 py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedTokens.has(index)}
+                          onChange={() => toggleTokenSelection(index)}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                      </td>
                       <td className="px-4 py-3 text-gray-400">{index + 1}</td>
                       <td className="px-4 py-3">
                         <span className="px-2 py-1 bg-gray-700 rounded text-sm capitalize">
@@ -288,6 +417,9 @@ export default function Home() {
                       </td>
                       <td className="px-4 py-3 text-green-400 font-mono">
                         {formatMarketCap(token.market_cap)}
+                      </td>
+                      <td className="px-4 py-3 text-blue-400 font-mono">
+                        {formatMarketCap(token.liquidity_usd)}
                       </td>
                       <td className="px-4 py-3">
                         <code className="text-xs bg-gray-900 px-2 py-1 rounded font-mono text-blue-300">
