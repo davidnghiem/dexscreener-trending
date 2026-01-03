@@ -10,3 +10,66 @@
 [00:00:00.955] Server  LOG     
 [00:00:00.997] Server  LOG     ✓ Ready in 909ms
 [00:00:22.291] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:15.276] Server  LOG     ✓ Compiled in 22ms
+[00:15:27.232] Server  LOG     ✓ Compiled in 13ms
+[00:15:44.407] Server  LOG     ✓ Compiled in 14ms
+[00:16:12.249] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:17:50.108] Server  LOG     ✓ Compiled in 15ms
+[00:18:12.556] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:18:37.636] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:19:42.349] Server  LOG     ✓ Compiled in 13ms
+[00:20:14.688] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:24:01.603] Server  LOG     ✓ Compiled in 13ms
+[00:24:10.710] Server  LOG     ✓ Compiled in 12ms
+[00:24:10.854] Browser ERROR   The `%s` prop supplied to <select> must be a scalar value if `multiple` is false.%s value 
+
+Check the render method of `Home`.
+[00:24:10.854] Browser ERROR   The `%s` prop supplied to <select> must be a scalar value if `multiple` is false.%s value 
+
+Check the render method of `Home`.
+[00:24:25.937] Server  LOG     ✓ Compiled in 11ms
+[00:24:37.669] Server  LOG     ✓ Compiled in 22ms
+[00:25:07.965] Server  LOG     ✓ Compiled in 16ms
+[00:25:17.578] Server  LOG     ✓ Compiled in 18ms
+[00:25:35.440] Server  LOG     ✓ Compiled in 16ms
+[00:25:43.874] Server  LOG     ✓ Compiled in 15ms
+[00:27:03.157] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:27:03.554] Browser ERROR   Error redefining provider into window.ethereum
+[00:28:44.999] Server  LOG     ✓ Compiled in 13ms
+[00:34:09.088] Server  LOG     ✓ Compiled in 15ms
+[00:34:20.204] Server  LOG     ✓ Compiled in 18ms
+[00:34:32.294] Server  LOG     ✓ Compiled in 21ms
+[00:34:41.413] Server  LOG     ✓ Compiled in 16ms
+[00:35:00.299] Server  LOG     ✓ Compiled in 21ms
+[00:35:00.855] Browser ERROR   ./app/page.tsx:491:20
+Parsing ecmascript source code failed
+  489 |                       </td>
+  490 |                     </tr>
+> 491 |                   ))}
+      |                    ^
+  492 |                 </tbody>
+  493 |               </table>
+  494 |             </div>
+
+Expected '</', got ')'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:39:12.351] Server  LOG     ✓ Compiled in 13ms
+[00:39:28.313] Server  LOG     ✓ Compiled in 25ms
+[00:42:21.363] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:44:09.136] Server  LOG     ✓ Compiled in 16ms
+[00:44:18.827] Server  LOG     ✓ Compiled in 27ms
+[00:44:46.633] Server  LOG     ✓ Compiled in 13ms
+[00:45:04.120] Server  LOG     ✓ Compiled in 19ms
+[00:45:04.854] Browser ERROR   uncaughtError: TypeError: Cannot read properties of undefined (reading 'h24')
+[00:45:16.782] Server  WARN    ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:45:16.829] Server  LOG     ✓ Compiled in 17ms
+[00:45:17.169] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:45:27.289] Server  LOG     ✓ Compiled in 14ms

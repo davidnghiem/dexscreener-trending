@@ -17,10 +17,22 @@ interface TokenInfo {
   price_usd: string | null;
   market_cap: number | null;
   liquidity_usd: number | null;
+  volume_24h: number | null;
   age: string | null;
   age_hours: number | null;
   dexscreener_url: string;
   twitter_url: string | null;
+  price_change: {
+    m5?: number;
+    h1?: number;
+    h6?: number;
+    h24?: number;
+  };
+  txns_24h: {
+    buys?: number;
+    sells?: number;
+  };
+  makers_24h: number | null;
 }
 
 async function getTokenInfoFromPair(chain: string, pairAddress: string): Promise<TokenInfo | null> {
@@ -79,10 +91,22 @@ async function getTokenInfoFromPair(chain: string, pairAddress: string): Promise
         price_usd: pair.priceUsd,
         market_cap: pair.marketCap,
         liquidity_usd: pair.liquidity?.usd,
+        volume_24h: pair.volume?.h24 || null,
         age: ageStr,
         age_hours: ageHours,
         dexscreener_url: `https://dexscreener.com/${chain}/${pairAddress}`,
         twitter_url: twitterUrl,
+        price_change: {
+          m5: pair.priceChange?.m5,
+          h1: pair.priceChange?.h1,
+          h6: pair.priceChange?.h6,
+          h24: pair.priceChange?.h24,
+        },
+        txns_24h: {
+          buys: pair.txns?.h24?.buys,
+          sells: pair.txns?.h24?.sells,
+        },
+        makers_24h: pair.txns?.h24?.makers || null,
       };
     }
   } catch (error) {

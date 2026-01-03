@@ -117,6 +117,8 @@ async function getTokenInfoFromPair(chain, pairAddress) {
                     ageStr = `${Math.floor(ageHours / 24 / 365)}y`;
                 }
             }
+            // Extract Twitter/X URL from info object
+            const twitterUrl = pair.info?.socials?.find((s)=>s.type === 'twitter' || s.platform === 'twitter')?.url || null;
             return {
                 chain,
                 contract_address: baseToken.address,
@@ -128,7 +130,8 @@ async function getTokenInfoFromPair(chain, pairAddress) {
                 liquidity_usd: pair.liquidity?.usd,
                 age: ageStr,
                 age_hours: ageHours,
-                dexscreener_url: `https://dexscreener.com/${chain}/${pairAddress}`
+                dexscreener_url: `https://dexscreener.com/${chain}/${pairAddress}`,
+                twitter_url: twitterUrl
             };
         }
     } catch (error) {

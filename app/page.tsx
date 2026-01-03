@@ -10,13 +10,21 @@ interface Token {
   price_usd: string | null;
   market_cap: number | null;
   liquidity_usd: number | null;
+  volume_24h: number | null;
   age: string | null;
   dexscreener_url: string;
   twitter_url: string | null;
-  priceChange?: {
+  price_change: {
+    m5?: number;
     h1?: number;
+    h6?: number;
     h24?: number;
   };
+  txns_24h: {
+    buys?: number;
+    sells?: number;
+  };
+  makers_24h: number | null;
 }
 
 function formatMarketCap(mcap: number | null): string {
@@ -25,6 +33,26 @@ function formatMarketCap(mcap: number | null): string {
   if (mcap >= 1_000_000) return `$${(mcap / 1_000_000).toFixed(1)}M`;
   if (mcap >= 1_000) return `$${(mcap / 1_000).toFixed(1)}K`;
   return `$${mcap.toFixed(0)}`;
+}
+
+function formatVolume(vol: number | null): string {
+  if (vol === null || vol === undefined) return 'N/A';
+  if (vol >= 1_000_000) return `$${(vol / 1_000_000).toFixed(2)}M`;
+  if (vol >= 1_000) return `$${(vol / 1_000).toFixed(1)}K`;
+  return `$${vol.toFixed(0)}`;
+}
+
+function formatPriceChange(change: number | undefined): string {
+  if (change === null || change === undefined) return 'N/A';
+  const sign = change >= 0 ? '+' : '';
+  return `${sign}${change.toFixed(2)}%`;
+}
+
+function getPriceChangeColor(change: number | undefined): string {
+  if (change === null || change === undefined) return 'text-gray-400';
+  if (change > 0) return 'text-green-400';
+  if (change < 0) return 'text-red-400';
+  return 'text-gray-400';
 }
 
 function getChainColor(chain: string): string {
@@ -218,7 +246,7 @@ export default function Home() {
   };
 
   const exportCSV = () => {
-    const headers = ['Rank', 'Chain', 'Symbol', 'Name', 'Contract Address', 'Age', 'Market Cap', 'Price USD'];
+    const headers = ['Rank', 'Chain', 'Symbol', 'Name', 'Contract Address', 'Age', 'Market Cap', 'Liquidity', 'Volume 24h', '24h Change %', 'Price USD'];
     const rows = tokens.map((t, i) => [
       i + 1,
       t.chain,
@@ -227,6 +255,9 @@ export default function Home() {
       t.contract_address,
       t.age || 'N/A',
       t.market_cap || 'N/A',
+      t.liquidity_usd || 'N/A',
+      t.volume_24h || 'N/A',
+      t.price_change.h24 || 'N/A',
       t.price_usd || 'N/A',
     ]);
     
@@ -408,6 +439,8 @@ export default function Home() {
                     <th className="px-4 py-3 text-left text-sm font-semibold">Age</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">MCap</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Liq</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold">Vol 24h</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold">24h Δ</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Contract Address</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold">Actions</th>
                   </tr>
@@ -418,7 +451,30 @@ export default function Home() {
                     const isNew = ageInHours !== null && ageInHours < 1;
 
                     return (
-                      <tr key={index} className={`hover:bg-gray-700/30 transition-all duration-200 ${selectedTokens.has(index) ? 'bg-blue-900/20 border-l-4 border-blue-500' : ''}`}>
+                      <tr key={index} className={`hover:bg-gray-700/30 transition-all duration-200 relative group/row ${selectedTokens.has(index) ? 'bg-blue-900/20 border-l-4 border-blue-500' : ''}`}>
+                        {/* Row hover tooltip */}
+                        <td colSpan={12} className="absolute pointer-events-none">
+                          <div className="hidden group-hover/row:block absolute z-20 bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-2xl left-1/2 -translate-x-1/2 -top-20 min-w-[300px]">
+                            <div className="text-xs space-y-2">
+                              <div className="flex justify-between gap-4">
+                                <span className="text-gray-400">Price:</span>
+                                <span className="text-green-400 font-mono">{token.price_usd || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between gap-4">
+                                <span className="text-gray-400">Buys (24h):</span>
+                                <span className="text-emerald-400 font-mono">{token.txns_24h.buys || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between gap-4">
+                                <span className="text-gray-400">Sells (24h):</span>
+                                <span className="text-rose-400 font-mono">{token.txns_24h.sells || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between gap-4 border-t border-gray-700 pt-2">
+                                <span className="text-gray-400">Makers (24h):</span>
+                                <span className="text-blue-400 font-mono">{token.makers_24h || 'N/A'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-center">
                           <input
                             type="checkbox"
@@ -458,6 +514,43 @@ export default function Home() {
                       </td>
                       <td className="px-4 py-3 text-blue-400 font-mono">
                         {formatMarketCap(token.liquidity_usd)}
+                      </td>
+                      <td className="px-4 py-3 text-purple-400 font-mono">
+                        {formatVolume(token.volume_24h)}
+                      </td>
+                      <td className="px-4 py-3 relative group">
+                        <span className={`font-mono font-semibold ${getPriceChangeColor(token.price_change.h24)}`}>
+                          {formatPriceChange(token.price_change.h24)}
+                        </span>
+                        {/* Tooltip on hover */}
+                        <div className="absolute z-10 hidden group-hover:block bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl -top-2 left-full ml-2 min-w-[140px]">
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between gap-3">
+                              <span className="text-gray-400">5m:</span>
+                              <span className={getPriceChangeColor(token.price_change.m5)}>
+                                {formatPriceChange(token.price_change.m5)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                              <span className="text-gray-400">1h:</span>
+                              <span className={getPriceChangeColor(token.price_change.h1)}>
+                                {formatPriceChange(token.price_change.h1)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                              <span className="text-gray-400">6h:</span>
+                              <span className={getPriceChangeColor(token.price_change.h6)}>
+                                {formatPriceChange(token.price_change.h6)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between gap-3 border-t border-gray-700 pt-1">
+                              <span className="text-gray-400">24h:</span>
+                              <span className={getPriceChangeColor(token.price_change.h24)}>
+                                {formatPriceChange(token.price_change.h24)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <code className="text-xs bg-gray-900 px-2 py-1 rounded font-mono text-blue-300">
