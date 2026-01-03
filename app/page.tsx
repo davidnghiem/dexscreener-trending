@@ -35,15 +35,18 @@ export default function Home() {
   // Helper function to parse age string to hours
   const parseAgeToHours = (age: string | null): number | null => {
     if (!age) return null;
-    const match = age.match(/(\d+)([mhd])/);
+    // Match patterns like: 5m, 2h, 1d, 3mo, 1y
+    const match = age.match(/(\d+)(m|h|d|mo|y)/);
     if (!match) return null;
 
     const value = parseInt(match[1]);
     const unit = match[2];
 
     if (unit === 'm') return value / 60; // minutes to hours
-    if (unit === 'h') return value;
-    if (unit === 'd') return value * 24;
+    if (unit === 'h') return value; // hours
+    if (unit === 'd') return value * 24; // days to hours
+    if (unit === 'mo') return value * 24 * 30; // months to hours (approximate)
+    if (unit === 'y') return value * 24 * 365; // years to hours (approximate)
     return null;
   };
 
