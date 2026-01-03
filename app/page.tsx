@@ -36,7 +36,8 @@ export default function Home() {
   const parseAgeToHours = (age: string | null): number | null => {
     if (!age) return null;
     // Match patterns like: 5m, 2h, 1d, 3mo, 1y
-    const match = age.match(/(\d+)(m|h|d|mo|y)/);
+    // Important: Order matters! Match "mo" before "m"
+    const match = age.match(/(\d+)(mo|m|h|d|y)/);
     if (!match) return null;
 
     const value = parseInt(match[1]);
