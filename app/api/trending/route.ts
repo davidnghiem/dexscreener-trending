@@ -20,6 +20,7 @@ interface TokenInfo {
   age: string | null;
   age_hours: number | null;
   dexscreener_url: string;
+  twitter_url: string | null;
 }
 
 async function getTokenInfoFromPair(chain: string, pairAddress: string): Promise<TokenInfo | null> {
@@ -64,6 +65,11 @@ async function getTokenInfoFromPair(chain: string, pairAddress: string): Promise
         }
       }
       
+      // Extract Twitter/X URL from info object
+      const twitterUrl = pair.info?.socials?.find((s: any) =>
+        s.type === 'twitter' || s.platform === 'twitter'
+      )?.url || null;
+
       return {
         chain,
         contract_address: baseToken.address,
@@ -76,6 +82,7 @@ async function getTokenInfoFromPair(chain: string, pairAddress: string): Promise
         age: ageStr,
         age_hours: ageHours,
         dexscreener_url: `https://dexscreener.com/${chain}/${pairAddress}`,
+        twitter_url: twitterUrl,
       };
     }
   } catch (error) {
