@@ -537,22 +537,22 @@ export default function Home() {
                         </code>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex gap-2">
                           <button
                             onClick={() => copyAddress(token.contract_address, index)}
-                            className={`px-3 py-1 rounded text-sm transition-colors ${
+                            className={`w-16 py-1 rounded text-sm transition-colors text-center ${
                               copiedIndex === index
                                 ? 'bg-dex-green text-white'
                                 : 'bg-dex-border hover:bg-dex-hover'
                             }`}
                           >
-                            {copiedIndex === index ? '✓ Copied' : 'Copy'}
+                            {copiedIndex === index ? '✓' : 'Copy'}
                           </button>
                           <a
                             href={token.dexscreener_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-1 bg-dex-blue hover:opacity-80 rounded text-sm transition-colors"
+                            className="w-16 py-1 bg-dex-blue hover:opacity-80 rounded text-sm transition-colors text-center"
                           >
                             DEX
                           </a>
@@ -561,7 +561,7 @@ export default function Home() {
                               href={token.twitter_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1 bg-sky-600 hover:bg-sky-700 rounded text-sm transition-colors flex items-center gap-1"
+                              className="w-16 py-1 bg-sky-600 hover:bg-sky-700 rounded text-sm transition-colors flex items-center justify-center gap-1"
                               title="View on X/Twitter"
                             >
                               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
