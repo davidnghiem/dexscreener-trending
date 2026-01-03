@@ -128,10 +128,22 @@ async function getTokenInfoFromPair(chain, pairAddress) {
                 price_usd: pair.priceUsd,
                 market_cap: pair.marketCap,
                 liquidity_usd: pair.liquidity?.usd,
+                volume_24h: pair.volume?.h24 || null,
                 age: ageStr,
                 age_hours: ageHours,
                 dexscreener_url: `https://dexscreener.com/${chain}/${pairAddress}`,
-                twitter_url: twitterUrl
+                twitter_url: twitterUrl,
+                price_change: {
+                    m5: pair.priceChange?.m5,
+                    h1: pair.priceChange?.h1,
+                    h6: pair.priceChange?.h6,
+                    h24: pair.priceChange?.h24
+                },
+                txns_24h: {
+                    buys: pair.txns?.h24?.buys,
+                    sells: pair.txns?.h24?.sells
+                },
+                makers_24h: pair.txns?.h24?.makers || null
             };
         }
     } catch (error) {

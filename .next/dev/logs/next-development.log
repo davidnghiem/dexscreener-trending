@@ -73,3 +73,37 @@ Import traces:
 [00:45:16.829] Server  LOG     ✓ Compiled in 17ms
 [00:45:17.169] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [00:45:27.289] Server  LOG     ✓ Compiled in 14ms
+[00:50:15.869] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:51:44.891] Server  LOG     ✓ Compiled in 25ms
+[00:51:45.855] Browser ERROR   In HTML, %s cannot be a child of <%s>.%s
+This will cause a hydration error.%s <div> tr  
+
+  ...
+    <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<SegmentViewNode>} forbidden={undefined} ...>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <InnerLayoutRouter url="/" tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} segmentPath={[...]} ...>
+            <SegmentViewNode type="page" pagePath="page.tsx">
+              <SegmentTrieNode>
+              <ClientPageRoot Component={function Home} serverProvidedParams={{...}}>
+                <Home params={Promise} searchParams={Promise}>
+                  <main className="min-h-scre...">
+                    <div className="max-w-7xl ...">
+                      <div>
+                      <div>
+                      <div className="bg-gray-80...">
+                        <div className="overflow-x...">
+                          <table className="w-full">
+                            <thead>
+                            <tbody className="divide-y d...">
+>                             <tr className={"hover:bg-gray-700/30 transition-all duration-200 relative group/row "}>
+>                               <div
+>                                 className="hidden group-hover/row:block absolute z-20 bg-gray-900 border border-gray..."
+>                               >
+                                ...
+                              ...
+                      ...
+            ...
+          ...
+
+[00:52:00.085] Server  LOG     ✓ Compiled in 19ms
