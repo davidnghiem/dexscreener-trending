@@ -107,3 +107,4 @@ This will cause a hydration error.%s <div> tr
           ...
 
 [00:52:00.085] Server  LOG     ✓ Compiled in 19ms
+[00:55:06.499] Server  LOG     ✓ Compiled in 15ms

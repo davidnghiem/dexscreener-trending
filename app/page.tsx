@@ -451,28 +451,7 @@ export default function Home() {
                     const isNew = ageInHours !== null && ageInHours < 1;
 
                     return (
-                      <tr key={index} className={`hover:bg-gray-700/30 transition-all duration-200 relative group/row ${selectedTokens.has(index) ? 'bg-blue-900/20 border-l-4 border-blue-500' : ''}`}>
-                        {/* Row hover tooltip */}
-                        <div className="hidden group-hover/row:block absolute z-20 bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-2xl left-1/2 -translate-x-1/2 -top-20 min-w-[300px] pointer-events-none">
-                          <div className="text-xs space-y-2">
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">Price:</span>
-                              <span className="text-green-400 font-mono">{token.price_usd || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">Buys (24h):</span>
-                              <span className="text-emerald-400 font-mono">{token.txns_24h.buys || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">Sells (24h):</span>
-                              <span className="text-rose-400 font-mono">{token.txns_24h.sells || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between gap-4 border-t border-gray-700 pt-2">
-                              <span className="text-gray-400">Makers (24h):</span>
-                              <span className="text-blue-400 font-mono">{token.makers_24h || 'N/A'}</span>
-                            </div>
-                          </div>
-                        </div>
+                      <tr key={index} className={`hover:bg-gray-700/30 transition-all duration-200 ${selectedTokens.has(index) ? 'bg-blue-900/20 border-l-4 border-blue-500' : ''}`}>
                         <td className="px-4 py-3 text-center">
                           <input
                             type="checkbox"
