@@ -227,8 +227,8 @@ export default function Home() {
         <div className="bg-gray-800 rounded-lg p-6 mb-6">
           {/* Chain Multi-Select */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2 text-gray-300">Chains (multi-select):</label>
-            <div className="flex flex-wrap gap-2">
+            <label className="block text-sm font-semibold mb-2 text-gray-300 text-center">Chains (multi-select):</label>
+            <div className="flex flex-wrap gap-2 justify-center">
               {['solana', 'ethereum', 'bsc', 'base', 'polygon', 'arbitrum', 'avalanche'].map(chain => (
                 <button
                   key={chain}
